@@ -1,0 +1,12 @@
+{
+    "folder-color.pathColors": [
+        {
+            "folderPath": "php_examples\\cap 2\\",
+            "color": "foldercolorizer.color_00ccff"
+        },
+        {
+            "folderPath": "php_examples\\cap 3\\",
+            "color": "foldercolorizer.color_9900ff"
+        }
+    ]
+}
