@@ -51,6 +51,33 @@ if (!empty($_COOKIE)) {
         Valor: <input type="text" name="valor"><br><br>
         <button type="submit">Salvar</button>
     </form>
+    <form method="get">
+        Nome: <input type="text" name="nome"><br><br>
+        Valor: <input type="text" name="valor"><br><br>
+        <button type="submit">Salvar</button>
+    </form>
+    <form method="get">
+        Nome: <input type="text" name="nome"><br><br>
+
+        <button type="submit">Salvar</button>
+    </form>
+    <?php 
+    
+    $texto = "Olá, mundo!";
+    echo strlen($texto) . "<br>"; // Retorna o comprimento da string
+    echo str_replace("mundo", "PHP", $texto) . "<br>"; //
+    echo strtoupper($texto) . "<br>"; // Converte para maiúsculas
+    echo strtolower($texto) . "<br>"; // Converte para minúsculas
+    echo substr($texto, 0, 5) . "<br>"; // Retorna os primeiros 5 caracteres
+    echo strrev($texto) . "<br>"; // Inverte a string   
+    echo htmlspecialchars("<b>Texto em negrito</b>") . "<br>"; // Converte caracteres especiais para entidades HTML
+    echo nl2br("Linha 1\nLinha 2\nLinha 3") . "<br>"; // Converte quebras de linha para <br>
+    echo trim("   Texto com espaços   ") . "<br>"; // Remove espaços em branco do início e do fim da string
+    echo str_repeat("PHP ", 3) . "<br>"; // Repete a string 3 vezes
+    echo strpos($texto, "mundo") . "<br>"; // Retorna a posição da primeira ocorrência de "mundo"
+    echo str_contains($texto, "mundo") ? "Contém 'mundo'" : "Não contém 'mundo'"; // Verifica se a string contém "mundo"       
+    
+    ?>
 
 </body>
 

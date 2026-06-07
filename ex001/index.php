@@ -11,10 +11,15 @@
 
     <h1>Dados do navegador</h1>
     <?php
-    $_NOME = "Student";
-    echo "<p>Olá, $_NOME! Bem-vindo ao curso de PHP!</p>";
-    phpinfo();
-    
+    $user = [
+        "sergio" => 32,
+        "maria" => 28,
+        "joao" => 45
+    ];
+    foreach ($user as $name => $age) {
+        echo "<p>Nome: $name, Idade: $age</p>";
+    }
+
     ?>
 </body>
 
