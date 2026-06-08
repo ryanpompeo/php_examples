@@ -164,3 +164,15 @@ $funcionarios = $pdo->query("SELECT * FROM funcionarios ORDER BY id DESC")->fetc
 </body>
 
 </html>
+
+<!-- /*
+CREATE TABLE funcionarios (
+id INT AUTO_INCREMENT PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+email VARCHAR(100) NOT NULL,
+telefone VARCHAR(20) NOT NULL,
+cargo VARCHAR(50) NOT NULL,
+status ENUM('Ativo', 'Inativo') DEFAULT 'Ativo'
+);
+
+*/ -->
