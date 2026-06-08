@@ -1,26 +1,29 @@
 <?php
-// 1. CONEXÃO COM O BANCO DE DADOS (XAMPP LOCAL)
+// 1. CONEXÃO COM O BANCO DE DADOS
+// Estabelece a conexão com o servidor MySQL. Como o bloco try-catch foi removido, 
 $host = '143.106.241.3';
 $db   = 'cl203420';
 $user = 'cl203420';
 $pass = 'cl*09082007';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erro de conexão local. Certifique-se de que o MySQL do XAMPP está rodando.");
-}
+$pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
 
-
+// 2. LÓGICA DE EXCLUSÃO (DELETE)
+// Verifica se a URL contém a query string 'delete' (ex: index.php?delete=5).
+// O acionamento vem do clique no link "Excluir" na tabela HTML.
 if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $pdo->prepare("DELETE FROM funcionarios WHERE id = ?")->execute([$id]);
+    $id = $_GET['delete'];
+    // Executa a instrução SQL diretamente no banco para remover a linha correspondente ao ID.
+    $pdo->query("DELETE FROM funcionarios WHERE id = $id");
+    // Redireciona o navegador para a raiz da página para limpar o parâmetro "?delete=X" da URL.
     header("Location: index.php");
     exit;
 }
 
+// 3. LÓGICA DE CRIAÇÃO E ATUALIZAÇÃO (INSERT/UPDATE)
+// Intercepta a requisição de forma global se os dados vieram do botão "submit" do formulário HTML.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Coleta os dados empacotados pelo navegador. O operador "??" garante que, se o ID não existir, ele assume string vazia.
     $id = $_POST['id'] ?? '';
     $nome = $_POST['nome'];
     $email = $_POST['email'];
@@ -28,26 +31,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cargo = $_POST['cargo'];
     $status = $_POST['status'];
 
+    // O ID dita o fluxo. Oculto no HTML, se ele existe, estamos sobrescrevendo algo que já está no banco.
     if ($id) {
-        $stmt = $pdo->prepare("UPDATE funcionarios SET nome=?, email=?, telefone=?, cargo=?, status=? WHERE id=?");
-        $stmt->execute([$nome, $email, $telefone, $cargo, $status, $id]);
+        // Executa o UPDATE. As variáveis PHP são injetadas diretamente na string SQL.
+        $pdo->query("UPDATE funcionarios SET nome='$nome', email='$email', telefone='$telefone', cargo='$cargo', status='$status' WHERE id=$id");
     } else {
-        $stmt = $pdo->prepare("INSERT INTO funcionarios (nome, email, telefone, cargo, status) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$nome, $email, $telefone, $cargo, $status]);
+        // Se não há ID preenchido, é um novo registro. Executa o INSERT.
+        $pdo->query("INSERT INTO funcionarios (nome, email, telefone, cargo, status) VALUES ('$nome', '$email', '$telefone', '$cargo', '$status')");
     }
+    
+    // Padrão PRG (Post/Redirect/Get). Força o navegador a carregar a página novamente via GET.
+    // Isso evita o erro clássico de "Confirmar reenvio de formulário" se o usuário apertar F5.
     header("Location: index.php");
     exit;
 }
 
-
+// 4. LÓGICA DE BUSCA PARA EDIÇÃO (READ ESPECÍFICO)
 $edit_data = null;
+// Verifica se a URL contém a query string 'edit' (ex: index.php?edit=5).
 if (isset($_GET['edit'])) {
-    $id = (int)$_GET['edit'];
-    $stmt = $pdo->prepare("SELECT * FROM funcionarios WHERE id = ?");
-    $stmt->execute([$id]);
-    $edit_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $id = $_GET['edit'];
+    // Executa um SELECT filtrado pelo ID para buscar os dados que já existem no banco.
+    // O fetch(PDO::FETCH_ASSOC) transforma a linha do banco em um array associativo legível para o HTML.
+    $edit_data = $pdo->query("SELECT * FROM funcionarios WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
 }
 
+// 5. LÓGICA DE LEITURA GERAL (READ TOTAL)
+// Busca todos os registros da tabela, ordenando pelo ID do mais recente para o mais antigo.
+// O fetchAll() cria uma matriz com todos os resultados para popularmos a tabela HTML.
 $funcionarios = $pdo->query("SELECT * FROM funcionarios ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -57,7 +68,7 @@ $funcionarios = $pdo->query("SELECT * FROM funcionarios ORDER BY id DESC")->fetc
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD PHP </title>
+    <title>CRUD PHP - Básico e Inseguro</title>
 </head>
 
 <body>
@@ -134,10 +145,10 @@ $funcionarios = $pdo->query("SELECT * FROM funcionarios ORDER BY id DESC")->fetc
             <?php foreach ($funcionarios as $func): ?>
             <tr>
                 <td><?= $func['id'] ?></td>
-                <td><?= htmlspecialchars($func['nome']) ?></td>
-                <td><?= htmlspecialchars($func['email']) ?></td>
-                <td><?= htmlspecialchars($func['telefone']) ?></td>
-                <td><?= htmlspecialchars($func['cargo']) ?></td>
+                <td><?= $func['nome'] ?></td>
+                <td><?= $func['email'] ?></td>
+                <td><?= $func['telefone'] ?></td>
+                <td><?= $func['cargo'] ?></td>
                 <td><?= $func['status'] ?></td>
                 <td>
                     <a href="index.php?edit=<?= $func['id'] ?>">Editar</a> |
