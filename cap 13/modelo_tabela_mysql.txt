@@ -1,0 +1,56 @@
+-- =====================================================
+-- MODELO PARA CRIAR TABELA NO MYSQL
+-- Copie, troque os nomes e cole no MySQL / phpMyAdmin (aba SQL)
+-- =====================================================
+
+USE cl203420;
+
+CREATE TABLE exemplo (
+    id            INT AUTO_INCREMENT PRIMARY KEY,  -- número inteiro que cresce sozinho (1, 2, 3...)
+    nome          VARCHAR(100) NOT NULL,           -- texto curto, até 100 letras, obrigatório
+    email         VARCHAR(150) UNIQUE,             -- texto, não pode repetir
+    senha         VARCHAR(255),                    -- 255 para caber o password_hash()
+    descricao     TEXT,                            -- texto longo (sem limite prático)
+    sigla         CHAR(2),                         -- texto de tamanho fixo (ex.: SP, RJ)
+    quantidade    INT DEFAULT 0,                   -- número inteiro, começa com 0
+    preco         DECIMAL(10,2),                   -- dinheiro: 10 dígitos, 2 depois da vírgula
+    peso          FLOAT,                           -- número com vírgula (aproximado)
+    ativo         BOOLEAN DEFAULT TRUE,            -- verdadeiro/falso (guarda 1 ou 0)
+    nascimento    DATE,                            -- data: '2026-10-19'
+    horario       TIME,                            -- hora: '14:30:00'
+    criado_em     DATETIME DEFAULT CURRENT_TIMESTAMP, -- data e hora, preenchida sozinha
+    perfil        ENUM('ADM', 'FUNC')              -- só aceita os valores da lista
+);
+
+
+-- =====================================================
+-- INSERIR DADOS (o id e o criado_em se preenchem sozinhos)
+-- =====================================================
+
+INSERT INTO exemplo (nome, email, quantidade, preco, peso, nascimento, perfil)
+VALUES ('Mouse', 'teste@email.com', 10, 49.90, 0.15, '2000-05-20', 'ADM');
+
+
+-- =====================================================
+-- COMANDOS ÚTEIS
+-- =====================================================
+
+-- Ver os dados:            SELECT * FROM exemplo;
+-- Ver a estrutura:         DESCRIBE exemplo;
+-- Ver as tabelas do banco: SHOW TABLES;
+-- Apagar a tabela:         DROP TABLE exemplo;
+-- Adicionar coluna:        ALTER TABLE exemplo ADD categoria VARCHAR(50);
+-- Remover coluna:          ALTER TABLE exemplo DROP COLUMN categoria;
+
+
+-- =====================================================
+-- RESUMO: QUAL TIPO USAR?
+-- =====================================================
+-- Inteiro (idade, quantidade, id) ........ INT
+-- Dinheiro (preço, salário) ............. DECIMAL(10,2)
+-- Número com vírgula (peso, nota) ....... FLOAT
+-- Texto curto (nome, email) ............. VARCHAR(tamanho)
+-- Texto longo (descrição, comentário) ... TEXT
+-- Sim/Não ............................... BOOLEAN
+-- Data / Hora / Data e hora ............. DATE / TIME / DATETIME
+-- Lista fixa de opções .................. ENUM('A', 'B')
