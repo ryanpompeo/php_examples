@@ -1,0 +1,135 @@
+=====================================================
+COMO RODAR PHP NO PC DA ESCOLA (XAMPP)
+=====================================================
+
+RESUMO:
+Start no Apache e no MySQL -> arquivo em htdocs -> http://localhost/pasta/
+
+
+-----------------------------------------------------
+1. LIGAR O SERVIDOR
+-----------------------------------------------------
+1. Abra o XAMPP Control Panel. Ele costuma ficar em
+   C:\xampp\xampp-control.exe ou no menu Iniciar.
+2. Clique em Start no Apache, que é o que roda o PHP.
+3. Se o projeto usa banco, clique em Start no MySQL também.
+4. Os dois nomes devem ficar com fundo verde.
+
+
+-----------------------------------------------------
+2. COLOCAR O ARQUIVO NA PASTA CERTA
+-----------------------------------------------------
+O Apache só enxerga o que está dentro de C:\xampp\htdocs
+
+- Um arquivo solto: salve como C:\xampp\htdocs\teste.php
+- Uma pasta:        salve como C:\xampp\htdocs\minhapasta\index.php
+
+Para trazer o projeto do GitHub sem usar Git:
+1. Entre em https://github.com/ryanpompeo/php_examples
+2. Clique em Code -> Download ZIP e extraia o arquivo.
+3. Copie a pasta que você quer (por exemplo, "cap 13") para dentro de htdocs.
+4. Dica: renomeie para um nome sem espaço, como cap13.
+   Isso facilita a URL.
+
+
+-----------------------------------------------------
+3. ABRIR NO NAVEGADOR
+-----------------------------------------------------
+Onde está o arquivo             O que digitar no navegador
+htdocs\teste.php                http://localhost/teste.php
+htdocs\minhapasta\index.php     http://localhost/minhapasta/
+htdocs\minhapasta\outro.php     http://localhost/minhapasta/outro.php
+
+ATENÇÃO: não dê dois cliques no arquivo. O endereço tem que começar
+com http://localhost. Se aparecer file:///C:/..., o PHP não roda:
+o navegador mostra o código ou baixa o arquivo.
+
+Teste rápido: crie htdocs\teste.php com
+    <?php echo "Funcionou!"; ?>
+e abra http://localhost/teste.php
+
+
+-----------------------------------------------------
+4. SE O PROJETO USA BANCO (COMO O CAP 13)
+-----------------------------------------------------
+1. Abra http://localhost/phpmyadmin
+2. Clique no banco cl203420 na barra da esquerda.
+   Se ele não existir, crie em "Novo".
+3. Vá na aba SQL, cole o código abaixo e clique em Executar:
+
+USE cl203420;
+
+CREATE TABLE produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    preco DECIMAL(10,2),
+    quantidade INT
+);
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(150),
+    senha VARCHAR(255),
+    perfil VARCHAR(20)
+);
+
+INSERT INTO produtos (nome, preco, quantidade) VALUES
+('Mouse', 49.90, 10), ('Mouse Gamer', 189.90, 4),
+('Teclado', 120.00, 7), ('Caderno', 25.50, 30);
+
+-- senhas: simone123 e tania123 (guardadas como hash)
+INSERT INTO usuarios (nome, email, senha, perfil) VALUES
+('Simone', 'sberbert@unicamp.br', '$2y$10$4AgJM4a20DXnyD6WFsTsBODaMu/PvF4UfS8sWpoYDWF5pYJ82IRYu', 'ADM'),
+('Tania', 'tania@unicamp.br', '$2y$10$ROsTzPSibKkLxu9NlF9NCubaepmWg.T/ta/c7jKDd9z.4gOBHGi3W', 'FUNC');
+
+4. Ajuste o config.php do projeto.
+   Este é o passo que mais faz o projeto quebrar:
+
+    $host = "localhost";
+    $banco = "cl203420";   // era "loja" no PC de casa
+    $usuario = "root";
+    $senha = "";
+
+   Se a escola usar outro usuário ou senha no MySQL, por exemplo um
+   usuário com o seu RA, troque $usuario e $senha pelos dados que o
+   professor passar.
+
+
+-----------------------------------------------------
+5. PROBLEMAS COMUNS
+-----------------------------------------------------
+* Apache não fica verde
+  Causa: outro programa usando a porta 80 (Skype, IIS).
+  Solução: no XAMPP, clique em Config -> httpd.conf, troque
+  "Listen 80" por "Listen 8080" e acesse http://localhost:8080/...
+
+* MySQL não fica verde
+  Causa: outro MySQL já está rodando.
+  Solução: pergunte ao professor. Às vezes o da escola já está ligado
+  como serviço do Windows.
+
+* Not Found
+  Causa: nome da pasta ou do arquivo está errado.
+  Solução: confira em htdocs. Letras maiúsculas e espaços contam.
+
+* Mostra o código PHP na tela
+  Causa: abriu com file:///
+  Solução: use http://localhost/...
+
+* Unknown database
+  Causa: nome do banco errado no config.php.
+  Solução: coloque cl203420.
+
+* Access denied for user
+  Causa: usuário ou senha do MySQL errados.
+  Solução: ajuste no config.php.
+
+* Table ... doesn't exist
+  Causa: as tabelas não foram criadas.
+  Solução: rode o SQL do passo 4.
+
+* Página em branco
+  Causa: erro de PHP escondido.
+  Solução: coloque ini_set('display_errors', 1); na primeira linha
+  do arquivo.
